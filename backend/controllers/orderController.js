@@ -16,46 +16,40 @@ const razorpayInstance = new razorpay({
 })
 
 // Placing orders using COD Method
-const placeOrder = async (req,res) => {
-    
-    try {
-        
-        const { userId, items, amount, address} = req.body;
+const placeOrder = async (req, res) => {
+  try {
+    const { items, amount, address } = req.body;
 
-        const orderData = {
-            userId,
-            items,
-            address,
-            amount,
-            paymentMethod:"COD",
-            payment:false,
-            date: Date.now()
-        }
+    const orderData = {
+      userId: req.user._id, // Use authenticated user's ID
+      items,
+      address,
+      amount,
+      paymentMethod: "COD",
+      payment: false,
+      date: Date.now()
+    };
 
-        const newOrder = new orderModel(orderData)
-        await newOrder.save()
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
 
-        await userModel.findByIdAndUpdate(userId,{cartData:{}})
+    await userModel.findByIdAndUpdate(req.user._id, { cartData: {} });
 
-        res.json({success:true,message:"Order Placed"})
-
-
-    } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
-    }
-
-}
+    res.json({ success: true, message: "Order Placed" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
 // Placing orders using Stripe Method
 const placeOrderStripe = async (req,res) => {
     try {
-        
-        const { userId, items, amount, address} = req.body
+        const { items, amount, address } = req.body
         const { origin } = req.headers;
 
         const orderData = {
-            userId,
+            userId: req.user._id,
             items,
             address,
             amount,
@@ -107,12 +101,12 @@ const placeOrderStripe = async (req,res) => {
 // Verify Stripe 
 const verifyStripe = async (req,res) => {
 
-    const { orderId, success, userId } = req.body
+    const { orderId, success } = req.body
 
     try {
         if (success === "true") {
             await orderModel.findByIdAndUpdate(orderId, {payment:true});
-            await userModel.findByIdAndUpdate(userId, {cartData: {}})
+            await userModel.findByIdAndUpdate(req.user._id, {cartData: {}})
             res.json({success: true});
         } else {
             await orderModel.findByIdAndDelete(orderId)
@@ -129,11 +123,10 @@ const verifyStripe = async (req,res) => {
 // Placing orders using Razorpay Method
 const placeOrderRazorpay = async (req,res) => {
     try {
-        
-        const { userId, items, amount, address} = req.body
+        const { items, amount, address } = req.body
 
         const orderData = {
-            userId,
+            userId: req.user._id,
             items,
             address,
             amount,
@@ -167,13 +160,12 @@ const placeOrderRazorpay = async (req,res) => {
 
 const verifyRazorpay = async (req,res) => {
     try {
-        
-        const { userId, razorpay_order_id  } = req.body
+        const { razorpay_order_id  } = req.body
 
         const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id)
         if (orderInfo.status === 'paid') {
             await orderModel.findByIdAndUpdate(orderInfo.receipt,{payment:true});
-            await userModel.findByIdAndUpdate(userId,{cartData:{}})
+            await userModel.findByIdAndUpdate(req.user._id,{cartData:{}})
             res.json({ success: true, message: "Payment Successful" })
         } else {
              res.json({ success: false, message: 'Payment Failed' });
@@ -190,7 +182,6 @@ const verifyRazorpay = async (req,res) => {
 const allOrders = async (req,res) => {
 
     try {
-        
         const orders = await orderModel.find({})
         res.json({success:true,orders})
 
@@ -201,12 +192,10 @@ const allOrders = async (req,res) => {
 
 }
 
-// User Order Data For Forntend
+// User Order Data For Frontend
 const userOrders = async (req,res) => {
     try {
-        
-        const { userId } = req.body
-
+        const userId = req.user._id; // Get userId from authenticated user
         const orders = await orderModel.find({ userId })
         res.json({success:true,orders})
 
@@ -219,7 +208,6 @@ const userOrders = async (req,res) => {
 // update order status from Admin Panel
 const updateStatus = async (req,res) => {
     try {
-        
         const { orderId, status } = req.body
 
         await orderModel.findByIdAndUpdate(orderId, { status })
