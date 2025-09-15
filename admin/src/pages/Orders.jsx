@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
@@ -8,12 +8,12 @@ const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [editingOrderId, setEditingOrderId] = useState(null);
   const [editedOrderData, setEditedOrderData] = useState({});
+  const printRef = useRef();
 
   const fetchAllOrders = async () => {
     if (!token) {
       return null;
     }
-
     try {
       const response = await axios.post(backendUrl + '/api/order/list', {}, { headers: { token } });
       if (response.data.success) {
@@ -38,7 +38,7 @@ const Orders = ({ token }) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(response.data.message);
+      toast.error(error.message);
     }
   };
 
@@ -92,6 +92,86 @@ const Orders = ({ token }) => {
   const handleCancelEdit = () => {
     setEditingOrderId(null);
     setEditedOrderData({});
+  };
+
+  // Print Invoice/Packing Slip
+  const printInvoice = (order) => {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Invoice - ${order._id}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 24px; }
+            h2 { margin-bottom: 0; }
+            .section { margin-bottom: 16px; }
+            .items-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+            .items-table th, .items-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+            .items-table th { background: #f5f5f5; }
+          </style>
+        </head>
+        <body>
+          <h2>Invoice / Packing Slip</h2>
+          <div class="section">
+            <strong>Order ID:</strong> ${order._id}<br/>
+            <strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}<br/>
+            <strong>Status:</strong> ${order.status}<br/>
+            <strong>Payment:</strong> ${order.payment ? 'Done' : 'Pending'} (${order.paymentMethod})
+          </div>
+          <div class="section">
+            <strong>Shipping To:</strong><br/>
+            ${order.address.firstName} ${order.address.lastName}<br/>
+            ${order.address.street}<br/>
+            ${order.address.city}, ${order.address.state || ''}, ${order.address.country || ''} ${order.address.zipcode}<br/>
+            Phone: ${order.address.phone}
+          </div>
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Qty</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.items.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.size}</td>
+                  <td>${item.quantity}</td>
+                  <td>${currency}${item.price}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <div class="section">
+            <strong>Total Amount:</strong> ${currency}${order.amount}
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  // Manage Returns/Refunds (simple status update)
+  const handleReturnRefund = async (orderId) => {
+    try {
+      const response = await axios.post(
+        backendUrl + '/api/order/status',
+        { orderId, status: 'Return/Refund Requested' },
+        { headers: { token } }
+      );
+      if (response.data.success) {
+        toast.success('Return/Refund marked for this order.');
+        await fetchAllOrders();
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
@@ -285,12 +365,26 @@ const Orders = ({ token }) => {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => handleEdit(order)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-2 text-xs"
-                >
-                  Edit
-                </button>
+                <>
+                  <button
+                    onClick={() => handleEdit(order)}
+                    className="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-2 text-xs"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => printInvoice(order)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-2 text-xs"
+                  >
+                    Print Invoice
+                  </button>
+                  <button
+                    onClick={() => handleReturnRefund(order._id)}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-2 text-xs"
+                  >
+                    Mark Return/Refund
+                  </button>
+                </>
               )}
               <select
                 onChange={(event) => statusHandler(event, order._id)}
@@ -303,6 +397,7 @@ const Orders = ({ token }) => {
                 <option value="Shipped">Shipped</option>
                 <option value="Out for delivery">Out for delivery</option>
                 <option value="Delivered">Delivered</option>
+                <option value="Return/Refund Requested">Return/Refund Requested</option>
               </select>
             </div>
           </div>
@@ -313,3 +408,4 @@ const Orders = ({ token }) => {
 };
 
 export default Orders;
+
