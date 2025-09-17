@@ -39,7 +39,7 @@ const Login = () => {
       if (!lastName.trim()) newErrors.lastName = "Last name is required."
       if (!username.trim()) newErrors.username = "Username is required."
       if (!validateEmail(email)) newErrors.email = "Please enter a valid email address ending with .com."
-      if (password.length < 6) newErrors.password = "Password must be at least 6 characters."
+      if (password.length < 6) newErrors.password = "Password must be at least 8 characters."
       if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match."
       if (!validatePhone(phone)) newErrors.phone = "Phone number must start with 09 and be 11 digits."
       if (!address.trim()) newErrors.address = "Address is required."
