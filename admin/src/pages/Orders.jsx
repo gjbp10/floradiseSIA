@@ -304,10 +304,6 @@ const Orders = ({ token }) => {
                     <p>
                       {order.address.city +
                         ', ' +
-                        order.address.state +
-                        ', ' +
-                        order.address.country +
-                        ', ' +
                         order.address.zipcode}
                     </p>
                   </div>
