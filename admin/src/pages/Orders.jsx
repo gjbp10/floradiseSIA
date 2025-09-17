@@ -125,7 +125,7 @@ const Orders = ({ token }) => {
             <strong>Shipping To:</strong><br/>
             ${order.address.firstName} ${order.address.lastName}<br/>
             ${order.address.street}<br/>
-            ${order.address.city}, ${order.address.state || ''}, ${order.address.country || ''} ${order.address.zipcode}<br/>
+            ${order.address.city}, ${order.address.zipcode}<br/>
             Phone: ${order.address.phone}
           </div>
           <table class="items-table">
