@@ -9,8 +9,7 @@ const Product = () => {
   const { products, currency, addToCart } = useContext(ShopContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState('');
-  const [size, setSize] = useState('');
-  // const [showSizeChart, setShowSizeChart] = useState(false); // This line is no longer needed
+  // const [size, setSize] = useState(''); // REMOVE THIS LINE
 
   const fetchProductData = async () => {
     products.map((item) => {
@@ -63,25 +62,10 @@ const Product = () => {
             {currency}
             {productData.price}
           </p>
-          <p className="mt-5 text-gray-500 md:w-4/5">{productData.description}</p>
-          <div className="flex flex-col gap-4 my-8">
-            <p></p>
-            <div className="flex gap-2">
-             
-            
-            </div>
-            {/* This div for the 'View Size Chart' button is no longer needed */}
-            {/* <div>
-              <button
-                className="text-blue-600 text-sm underline w-fit"
-                onClick={() => setShowSizeChart(true)}
-              >
-                View Size Chart
-              </button>
-            </div> */}
-          </div>
+          <p className="mt-5 mb-5 text-gray-500 md:w-4/5">{productData.description}</p>
+        <p> </p>
           <button
-            onClick={() => addToCart(productData._id, size)}
+            onClick={() => addToCart(productData._id)}
             className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
           >
             ADD TO CART
