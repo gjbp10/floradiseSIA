@@ -1,11 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { ShopContext } from '../context/ShopContext'
+import React, { useContext, useEffect, useState } from 'react';
+import { ShopContext } from '../context/ShopContext';
 import Title from '../components/Title';
 import axios from 'axios';
+import RatingPopup from "../components/RatingPopup";
 
 const Orders = () => {
     const { backendUrl, token, currency } = useContext(ShopContext);
     const [orderData, setorderData] = useState([]);
+    const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const loadOrderData = async () => {
         try {
@@ -37,11 +40,19 @@ const Orders = () => {
         loadOrderData();
     }, [token]);
 
-    const handleTrackOrder = () => {
-        // You can implement this function to navigate to a specific tracking page
-        // or show a modal with more details. For now, we'll log a message.
-        console.log("Tracking order...");
-        alert("Redirecting to a tracking page..."); // Example
+    const handleRateProduct = (product) => {
+        setSelectedProduct(product);
+        setIsRatingModalOpen(true);
+    };
+    
+    const handleCloseRatingModal = () => {
+        setIsRatingModalOpen(false);
+        setSelectedProduct(null);
+    };
+
+    // This function can be used to handle a successful review submission from the popup
+    const handleReviewSubmit = (reviewData) => {
+        console.log('Review submitted successfully:', reviewData);
     };
 
     return (
@@ -63,23 +74,33 @@ const Orders = () => {
                                         <p>Size: {item.size}</p>
                                     </div>
                                     <p className='mt-1'>Date: <span className='text-gray-400'>{new Date(item.date).toDateString()}</span></p>
-                                    {/* ✅ FIX: Displaying correct payment status (Paid/Unpaid) */}
                                     <p className='mt-1'>Payment: <span className='font-medium' style={{ color: item.payment ? 'green' : 'red' }}>
                                         {item.payment ? 'Paid' : 'Unpaid'} ({item.paymentMethod})
                                     </span></p>
                                 </div>
                             </div>
-                            <div className='md:w-1/2 flex justify-between'>
+                            <div className='md:w-1/2 flex justify-between gap-2'>
                                 <div className='flex items-center gap-2'>
                                     <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
                                     <p className='text-sm md:text-base'>{item.status}</p>
                                 </div>
-                                <button onClick={handleTrackOrder} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
+                                <div className='flex gap-2'>
+                                    <button onClick={() => handleRateProduct(item)} className='bg-pink-500 text-white px-4 py-2 text-sm font-medium rounded-sm'>Rate Product</button>
+                                </div>
                             </div>
                         </div>
                     ))
                 }
             </div>
+            
+            {/* Conditionally render the RatingPopup component */}
+            {isRatingModalOpen && selectedProduct && (
+                <RatingPopup
+                    product={selectedProduct}
+                    onClose={handleCloseRatingModal}
+                    onReviewSubmit={handleReviewSubmit}
+                />
+            )}
         </div>
     );
 };
