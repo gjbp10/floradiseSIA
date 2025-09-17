@@ -85,7 +85,7 @@ const Orders = () => {
                                     <p className='text-sm md:text-base'>{item.status}</p>
                                 </div>
                                 <div className='flex gap-2'>
-                                    <button onClick={() => handleRateProduct(item)} className='bg-pink-500 text-white px-4 py-2 text-sm font-medium rounded-sm'>Rate Product</button>
+                                   <button onClick={() => handleRateProduct(item)} className='bg-pink-500 text-white px-4 py-2 text-sm font-medium rounded-sm hover:bg-pink-600'>Rate Product</button>
                                 </div>
                             </div>
                         </div>
