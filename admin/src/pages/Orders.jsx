@@ -96,6 +96,8 @@ const Orders = ({ token }) => {
 
   // Print Invoice/Packing Slip
   const printInvoice = (order) => {
+    const shippingFee = 50; // Set the shipping fee
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <html>
@@ -108,6 +110,7 @@ const Orders = ({ token }) => {
             .items-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
             .items-table th, .items-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
             .items-table th { background: #f5f5f5; }
+            .total-section { text-align: right; }
           </style>
         </head>
         <body>
@@ -145,7 +148,9 @@ const Orders = ({ token }) => {
               `).join('')}
             </tbody>
           </table>
-          <div class="section">
+          <div class="total-section">
+            <strong>Subtotal:</strong> ${currency}${order.amount - shippingFee}<br/>
+            <strong>Shipping Fee:</strong> ${currency}${shippingFee}<br/>
             <strong>Total Amount:</strong> ${currency}${order.amount}
           </div>
         </body>
@@ -408,4 +413,3 @@ const Orders = ({ token }) => {
 };
 
 export default Orders;
-
