@@ -6,6 +6,25 @@ import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
+const cityOptions = [
+    "Manila",
+    "Quezon City",
+    "Makati",
+    "Pasig",
+    "Taguig",
+    "Caloocan",
+    "Parañaque",
+    "Mandaluyong",
+    "San Juan",
+    "Las Piñas",
+    "Pasay",
+    "Valenzuela",
+    "Marikina",
+    "Navotas",
+    "Malabon"
+    // Add more cities as needed
+];
+
 const PlaceOrder = () => {
     const [method, setMethod] = useState('cod');
     const { 
@@ -105,7 +124,18 @@ const PlaceOrder = () => {
                 <input required onChange={onChangeHandler} name='email' value={formData.email} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="email" placeholder='Email address' />
                 <input required onChange={onChangeHandler} name='street' value={formData.street} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Street' />
                 <div className='flex gap-3'>
-                    <input required onChange={onChangeHandler} name='city' value={formData.city} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='City' />
+                    <select
+                        required
+                        name="city"
+                        value={formData.city}
+                        onChange={onChangeHandler}
+                        className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+                    >
+                        <option value="">Select City</option>
+                        {cityOptions.map(city => (
+                            <option key={city} value={city}>{city}</option>
+                        ))}
+                    </select>
                     <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Zipcode' />
                 </div>
                 <input required onChange={onChangeHandler} name='phone' value={formData.phone} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="number" placeholder='Phone' />
@@ -123,7 +153,6 @@ const PlaceOrder = () => {
                             <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'stripe' ? 'bg-green-400' : ''}`}></p>
                             <img className='h-5 mx-4' src={assets.stripe_logo} alt="Stripe Logo" />
                         </div>
-                       
                         <div onClick={() => setMethod('cod')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
                             <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'cod' ? 'bg-green-400' : ''}`}></p>
                             <p className=' text-gray-500 text-sm font-medium mx-4'>CASH ON DELIVERY</p>
