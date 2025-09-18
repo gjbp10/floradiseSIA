@@ -20,7 +20,7 @@ const LatestCollection = () => {
         <div className='my-10'>
             <div className='text-center py-8 text-3xl'>
                 <Title text1={"LATEST"} text2={"COLLECTIONS"} />
-                <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>Discover native seeds that honor biodiversity and support sustainable growth. Each seed is rooted in tradition and nurtures a greener, more resilient future</p>
+                <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>Discover our latest collections featuring unique styles and eco-friendly designs. Shop now for fresh arrivals that blend fashion with sustainability!</p>
             </div>
 
             {/* Rendering Products */}
