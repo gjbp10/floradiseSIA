@@ -179,7 +179,7 @@ const Navbar = () => {
         <div className="absolute top-20 right-5 bg-white border rounded-lg shadow-lg p-4 w-64 z-20">
           {!finished ? (
             <>
-              <h3 className="font-bold mb-2 text-center">Guess the Plant 🌱</h3>
+              <h3 className="font-bold mb-2 text-center">Guess the Scientific name of the Plant 🌱</h3>
               <p className="text-sm mb-3">What is the scientific name of <span className="font-semibold">{quizData[currentQuestion].plant}</span>?</p>
               <div className="flex flex-col gap-2">
                 {quizData[currentQuestion].options.map((opt, i) => (
