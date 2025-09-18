@@ -25,7 +25,6 @@ const Navbar = () => {
     { plant: "Alugbati", correct: "Basella alba", options: ["Basella alba", "Annona squamosa", "Pithecellobium dulce"] },
     { plant: "Kangkong", correct: "Ipomoea aquatica", options: ["Ipomoea aquatica", "Hibiscus rosa-sinensis", "Ocimum basilicum"] },
     { plant: "Atis", correct: "Annona squamosa", options: ["Annona squamosa", "Helianthus", "Senna alata"] },
-    { plant: "Camachile", correct: "Pithecellobium dulce", options: ["Pithecellobium dulce", "Ocimum basilicum", "Apium graveolens var. secalinum"] },
     { plant: "Rose mallow", correct: "Hibiscus", options: ["Hibiscus", "Helianthus", "Mangifera indica"] },
     { plant: "Sunflower", correct: "Helianthus", options: ["Helianthus", "Peperomia pellucida", "Basella alba"] },
     { plant: "Gumamela", correct: "Hibiscus rosa-sinensis", options: ["Hibiscus rosa-sinensis", "Senna alata", "Ipomoea aquatica"] },
