@@ -21,11 +21,11 @@ const placeOrder = async (req, res) => {
     const { items, amount, address } = req.body;
 
     const orderData = {
-      userId: req.user._id, // Use authenticated user's ID
+      userId: req.user._id, 
       items,
       address,
       amount,
-      paymentMethod: "COD",
+      paymentMethod: "COD" || "Stripe",
       payment: false,
       date: Date.now()
     };
@@ -193,17 +193,16 @@ const allOrders = async (req,res) => {
 }
 
 // User Order Data For Frontend
-const userOrders = async (req,res) => {
-    try {
-        const userId = req.user._id; // Get userId from authenticated user
-        const orders = await orderModel.find({ userId })
-        res.json({success:true,orders})
-
-    } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
-    }
-}
+const userOrders = async (req, res) => {
+  try {
+    const userId = req.user.id; // ✅ comes from authUser middleware
+    const orders = await orderModel.find({ userId }).sort({ date: -1 });
+    res.json({ success: true, orders });
+  } catch (error) {
+    console.error("Error fetching user orders:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // update order status from Admin Panel
 const updateStatus = async (req,res) => {
