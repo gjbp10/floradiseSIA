@@ -1,6 +1,6 @@
 import React from 'react'
 import { assets } from '../assets/assets'
-import Carousel from './Carousel/Carousel'
+import Carousel from './carousel/Carousel'
 
 const Hero = () => {
   return (
