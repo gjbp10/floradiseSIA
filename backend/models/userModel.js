@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, default: "" },
     cartData: { type: Object, default: {} },
     wishlistData: { type: Object, default: {} },
+    role: { type: String, default: "user" }, 
+
   },
   { minimize: false, timestamps: true },
 )
