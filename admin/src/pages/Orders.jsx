@@ -96,7 +96,7 @@ const Orders = ({ token }) => {
 
   // Print Invoice/Packing Slip
   const printInvoice = (order) => {
-    const shippingFee = 50; // Set the shipping fee
+    const shippingFee = 50; 
 
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -109,11 +109,12 @@ const Orders = ({ token }) => {
             .section { margin-bottom: 16px; }
             .items-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
             .items-table th, .items-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-            .items-table th { background: #f5f5f5; }
+            .items-table th { background: #f5f5f5ff; }
             .total-section { text-align: right; }
           </style>
         </head>
         <body>
+          <h1>Floradise Co.</h1>
           <h2>Invoice / Packing Slip</h2>
           <div class="section">
             <strong>Order ID:</strong> ${order._id}<br/>
@@ -126,22 +127,29 @@ const Orders = ({ token }) => {
             ${order.address.firstName} ${order.address.lastName}<br/>
             ${order.address.street}<br/>
             ${order.address.city}, ${order.address.zipcode}<br/>
-            Phone: ${order.address.phone}
+            Phone: ${order.address.phone}<br/>
+            </div>
+        <div class="section">
+            <strong>Shipping From</strong><br/>
+            <span> One Bonifacio High Street, 5th Avenue cor. 28th Street, Bonifacio Global City, Taguig, Metro Manila, Philippines</span><br/>
+            <span><strong>Phone:</strong> (+63) 966-504-2672<br/>
+            <span><strong>Email:</strong> floradiseco@gmail.com
           </div>
           <table class="items-table">
             <thead>
               <tr>
                 <th>Product</th>
-                <th>Size</th>
+                
                 <th>Qty</th>
                 <th>Price</th>
+               
               </tr>
             </thead>
             <tbody>
               ${order.items.map(item => `
                 <tr>
                   <td>${item.name}</td>
-                  <td>${item.size}</td>
+                 
                   <td>${item.quantity}</td>
                   <td>${currency}${item.price}</td>
                 </tr>
