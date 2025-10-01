@@ -1,14 +1,39 @@
-JWT_SECRET = "greatstack"
-ADMIN_EMAIL = "admin@example.com"
-ADMIN_PASSWORD = "greatstack123"
+import express from "express"
+import cors from "cors"
+import "dotenv/config"
+import connectDB from "./config/mongodb.js"
+import connectCloudinary from "./config/cloudinary.js"
+import userRouter from "./routes/userRoute.js"
+import productRouter from "./routes/productRoute.js"
+import cartRouter from "./routes/cartRoute.js"
+import orderRouter from "./routes/orderRoute.js"
+import wishlistRouter from "./routes/wishlistRoute.js"
+import analyticsRouter from "./routes/analyticsRoute.js";
 
-MONGODB_URI = "mongodb+srv://qadctavu:adobongmanok@cluster0.dzjazrc.mongodb.net"
 
-CLOUDINARY_API_KEY = "594811577533223"
-CLOUDINARY_SECRET_KEY = "uoaxxQfv2qvKHgRyRn0h_cx9uos"
 
-CLOUDINARY_NAME = "dz15gvgpl"
+const app = express()
+const port = process.env.PORT || 4000
 
-STRIPE_SECRET_KEY = 'ssk_live_51RyPHTI8Tai6Y9NXtCQ84bRGqhTw0PU4u5WZV1qdlzJoy2rwla7D9GkMkQlKuPFSHRVZSeWSh9YIEdI0XEsYJEOq00dnagmIua'
-RAZORPAY_KEY_SECRET = '-------- Paste Razorpay Secret key --------'
-RAZORPAY_KEY_ID = '-------- Paste Razorpay key Id --------'
+// DB + Cloudinary connections
+connectDB()
+connectCloudinary()
+
+// Middleware
+app.use(express.json())
+app.use(cors())
+
+// API Routes
+app.use("/api/user", userRouter)
+app.use("/api/product", productRouter)
+app.use("/api/cart", cartRouter)
+app.use("/api/order", orderRouter)
+app.use("/api/wishlist", wishlistRouter)
+app.use("/api/analytics", analyticsRouter) 
+
+
+app.get("/", (req, res) => {
+  res.send("API Working")
+})
+
+app.listen(port, () => console.log(`Server started on PORT: ${port}`))
