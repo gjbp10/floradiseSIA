@@ -12,7 +12,8 @@ const cityOptions = [
     "Makati",import React, { useContext, useState, useEffect } from 'react';
 import Title from '../components/Title';
 import CartTotal from '../components/CartTotal';
-import { assets } from '../src/assets';
+import { assets } from '../assets/assets';
+
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
