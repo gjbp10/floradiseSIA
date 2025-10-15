@@ -5,14 +5,11 @@ import { useEffect, useState } from "react"
 import { backendUrl } from "../App"
 import { toast } from "react-toastify"
 
-const AdminUser = ({ token }) => { // Renamed component
+const AdminUser = ({ token }) => {
     const [users, setUsers] = useState([])
     const [editingUser, setEditingUser] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
     const [formData, setFormData] = useState({
-        // Note: Backend uses firstName/lastName, but form uses 'name'. This data conversion
-        // must happen on the client side before sending, or on the server side.
-        // Assuming your backend handles splitting 'name' or you are sending firstName/lastName in the update.
         name: "", 
         email: "",
         role: "user",
@@ -29,28 +26,25 @@ const AdminUser = ({ token }) => { // Renamed component
     // Fetch all users
     const fetchUsers = async () => {
         try {
-            // 🌟 FIX 1: Change endpoint to /api/user/all 🌟
             const response = await axios.get(backendUrl + "/api/user/all", {
                 headers: { token },
             })
             if (response.data.users) {
-                // Ensure users is an array before reversing
                 setUsers(response.data.users ? response.data.users.reverse() : []);
             } else {
                 toast.error("Failed to fetch users")
             }
         } catch (error) {
             console.error(error)
-            toast.error(error.response?.data?.message || error.message) // Use detailed error if available
+            toast.error(error.response?.data?.message || error.message)
         }
     }
 
     // Remove user/admin
     const removeUser = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this user?")) return
+        if (!window.confirm("Are you sure you want to delete this admin?")) return
         try {
             setIsLoading(true)
-            // 🌟 FIX 2: Change endpoint to /api/user/:id 🌟
             const response = await axios.delete(backendUrl + `/api/user/${id}`, {
                 headers: { token },
             })
@@ -58,7 +52,7 @@ const AdminUser = ({ token }) => { // Renamed component
                 toast.success(response.data.message)
                 await fetchUsers()
             } else {
-                toast.error("Failed to delete user")
+                toast.error("Failed to delete admin")
             }
         } catch (error) {
             console.error(error)
@@ -72,12 +66,9 @@ const AdminUser = ({ token }) => { // Renamed component
     const toggleSuspend = async (user) => {
         try {
             setIsLoading(true)
-            // 🌟 FIX 3: Change endpoint to /api/user/:id (using PUT for update) 🌟
-            // NOTE: This assumes your updateUser backend route handles the 'suspended' field.
             const response = await axios.put(
                 backendUrl + `/api/user/${user._id}`,
                 { 
-                    // Send the full name, email, and role along with the new suspended status
                     firstName: user.firstName, 
                     lastName: user.lastName, 
                     email: user.email,
@@ -103,9 +94,7 @@ const AdminUser = ({ token }) => { // Renamed component
     // Open edit modal
     const openEditModal = (user) => {
         setEditingUser(user)
-        // Note: Combining firstName and lastName for the single 'name' field in the form
-        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim()
         setFormData({
             name: fullName,
             email: user.email || "",
@@ -134,20 +123,17 @@ const AdminUser = ({ token }) => { // Renamed component
         e.preventDefault()
         setIsLoading(true)
         
-        // Split name back into firstName and lastName for the backend
-        const nameParts = formData.name.trim().split(/\s+/);
-        const firstName = nameParts[0];
-        const lastName = nameParts.slice(1).join(" ") || "";
+        const nameParts = formData.name.trim().split(/\s+/)
+        const firstName = nameParts[0]
+        const lastName = nameParts.slice(1).join(" ") || ""
         
         try {
-            // 🌟 FIX 4: Change endpoint to /api/user/:id 🌟
             const response = await axios.put(
                 backendUrl + `/api/user/${editingUser._id}`,
                 { 
                     ...formData,
-                    firstName: firstName,
-                    lastName: lastName,
-                    // Remove the 'name' field which is not expected by the controller
+                    firstName,
+                    lastName,
                     name: undefined
                 },
                 { headers: { token } }
@@ -167,7 +153,7 @@ const AdminUser = ({ token }) => { // Renamed component
         }
     }
 
-    // Handle add admin input (same as before)
+    // Handle add admin input
     const handleAddAdminChange = (e) => {
         const { name, value } = e.target
         setAddAdminData((prev) => ({ ...prev, [name]: value }))
@@ -178,13 +164,11 @@ const AdminUser = ({ token }) => { // Renamed component
         e.preventDefault()
         setIsLoading(true)
 
-        // Split name back into firstName and lastName for the backend
-        const nameParts = addAdminData.name.trim().split(/\s+/);
-        const firstName = nameParts[0];
-        const lastName = nameParts.slice(1).join(" ") || "";
+        const nameParts = addAdminData.name.trim().split(/\s+/)
+        const firstName = nameParts[0]
+        const lastName = nameParts.slice(1).join(" ") || ""
         
         try {
-            // 🌟 FIX 5: Change endpoint to /api/user/register-admin 🌟
             const response = await axios.post(
                 backendUrl + "/api/user/register-admin",
                 {
@@ -192,10 +176,8 @@ const AdminUser = ({ token }) => { // Renamed component
                     lastName,
                     email: addAdminData.email,
                     password: addAdminData.password,
-                    role: addAdminData.role // Should be 'admin'
+                    role: addAdminData.role
                 },
-                // Token is necessary here as this route is used for adding a new admin 
-                // *after* the first one is created and requires admin authorization.
                 { headers: { token } } 
             )
             if (response.data.success) {
@@ -219,10 +201,9 @@ const AdminUser = ({ token }) => { // Renamed component
     }, [])
 
     return (
-        // ... (The rest of the component's JSX remains the same)
         <>
             <div className="flex items-center justify-between mb-2">
-                <p>Admin Accounts</p>
+               <h3 className="text-2xl font-bold mb-6">Admin Account</h3>
                 <button
                     className="px-4 py-2 bg-black text-white rounded text-sm"
                     onClick={() => setShowAddAdmin(true)}
@@ -230,9 +211,10 @@ const AdminUser = ({ token }) => { // Renamed component
                     Add Admin
                 </button>
             </div>
+
             <div className="flex flex-col gap-2">
                 {/* Table Header */}
-                <div className="hidden md:grid grid-cols-[2fr_3fr_2fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm">
+                <div className="hidden md:grid grid-cols-[2fr_3fr_2fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm font-semibold">
                     <b>Name</b>
                     <b>Email</b>
                     <b>Role</b>
@@ -240,62 +222,134 @@ const AdminUser = ({ token }) => { // Renamed component
                     <b className="text-center">Action</b>
                 </div>
 
-                {/* User List */}
-                {users.map((user, index) => (
-                    <div
-                        key={index}
-                        className="grid grid-cols-[2fr_3fr] md:grid-cols-[2fr_3fr_2fr_1fr_1fr] items-center gap-2 py-1 px-2 border text-sm"
-                    >
-                        {/* Combine firstName and lastName for display */}
-                        <p>{user.firstName} {user.lastName}</p> 
-                        <p>{user.email}</p>
-                        <p>{user.role}</p>
-                        <p>
-                            {user.suspended ? (
-                                <span className="text-red-500 font-semibold">Suspended</span>
-                            ) : (
-                                <span className="text-green-600 font-semibold">Active</span>
-                            )}
-                        </p>
-                        <div className="flex justify-end md:justify-center gap-3">
-                            <span
-                                onClick={() => openEditModal(user)}
-                                className="cursor-pointer text-blue-500"
-                            >
-                                EDIT
-                            </span>
-                            {user.role === "user" && (
+                {/* Admin List Only */}
+                {users
+                    .filter((user) => user.role === "admin") // ✅ Show only admins
+                    .map((user, index) => (
+                        <div
+                            key={index}
+                            className="grid grid-cols-[2fr_3fr] md:grid-cols-[2fr_3fr_2fr_1fr_1fr] items-center gap-2 py-1 px-2 border text-sm"
+                        >
+                            <p>{user.firstName} {user.lastName}</p> 
+                            <p>{user.email}</p>
+                            <p>{user.role}</p>
+                            <p>
+                                {user.suspended ? (
+                                    <span className="text-red-500 font-semibold">Suspended</span>
+                                ) : (
+                                    <span className="text-green-600 font-semibold">Active</span>
+                                )}
+                            </p>
+                            <div className="flex justify-end md:justify-center gap-3">
                                 <span
-                                    onClick={() => toggleSuspend(user)}
-                                    className={`cursor-pointer ${user.suspended ? "text-green-600" : "text-orange-500"}`}
+                                    onClick={() => openEditModal(user)}
+                                    className="cursor-pointer text-blue-500"
                                 >
-                                    {user.suspended ? "UNSUSPEND" : "SUSPEND"}
+                                    EDIT
                                 </span>
-                            )}
-                            {user.role === "admin" && (
                                 <span
                                     onClick={() => removeUser(user._id)}
                                     className="cursor-pointer text-red-500"
                                 >
                                     DELETE
                                 </span>
-                            )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
 
-            {/* Edit Modal (JSX is unchanged, but logic handles name splitting/combining) */}
+            {/* Edit Modal */}
             {editingUser && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    {/* ... (Modal content) ... */}
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 className="font-semibold text-lg mb-4">Edit Admin</h3>
+                        <form onSubmit={updateUser} className="flex flex-col gap-3">
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                placeholder="Full Name"
+                                className="border p-2 rounded"
+                                required
+                            />
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                placeholder="Email"
+                                className="border p-2 rounded"
+                                required
+                            />
+                            <button
+                                type="submit"
+                                className="bg-blue-600 text-white py-2 rounded mt-2"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Updating..." : "Update Admin"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={closeEditModal}
+                                className="mt-2 bg-gray-300 text-black py-2 rounded"
+                            >
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
                 </div>
             )}
 
-            {/* Add Admin Modal (JSX is unchanged, but logic handles name splitting) */}
+            {/* Add Admin Modal */}
             {showAddAdmin && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    {/* ... (Modal content) ... */}
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 className="font-semibold text-lg mb-4">Add Admin</h3>
+                        <form onSubmit={addAdmin} className="flex flex-col gap-3">
+                            <input
+                                type="text"
+                                name="name"
+                                value={addAdminData.name}
+                                onChange={handleAddAdminChange}
+                                placeholder="Full Name"
+                                className="border p-2 rounded"
+                                required
+                            />
+                            <input
+                                type="email"
+                                name="email"
+                                value={addAdminData.email}
+                                onChange={handleAddAdminChange}
+                                placeholder="Email"
+                                className="border p-2 rounded"
+                                required
+                            />
+                            <input
+                                type="password"
+                                name="password"
+                                value={addAdminData.password}
+                                onChange={handleAddAdminChange}
+                                placeholder="Password"
+                                className="border p-2 rounded"
+                                required
+                            />
+                            <button
+                                type="submit"
+                                className="bg-black text-white py-2 rounded mt-2"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Adding..." : "Add Admin"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setShowAddAdmin(false)}
+                                className="mt-2 bg-gray-300 text-black py-2 rounded"
+                            >
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
                 </div>
             )}
         </>
