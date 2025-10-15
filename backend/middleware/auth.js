@@ -16,7 +16,8 @@ const authUser = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-
+    // FIX: Do not exclude the password when fetching the user
+    // This allows the Mongoose document to be saved correctly later
     const user = await User.findById(decoded.id);
 
     if (!user) {
