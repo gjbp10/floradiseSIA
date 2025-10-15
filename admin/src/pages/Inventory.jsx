@@ -62,7 +62,7 @@ const Inventory = ({ token }) => {
 
   return (
     <>
-      <p className="mb-2">Inventory Management</p>
+      <h3 className="text-2xl font-bold mb-6">Product Inventory</h3>
       <div className="flex flex-col gap-2">
         {/* ------- Table Title ---------- */}
         <div className="hidden md:grid grid-cols-[1fr_2fr_3fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm">
@@ -72,7 +72,7 @@ const Inventory = ({ token }) => {
           <b>Category</b>
           <b>Price</b>
           <b>Stock</b>
-          <b className="text-center">Low?</b>
+          <b className="text-center">Status</b>
         </div>
 
         {/* ------ Product List ------ */}
@@ -119,7 +119,7 @@ const Inventory = ({ token }) => {
               {item.stock < 10 ? (
                 <span className="text-red-500 font-bold">Low</span>
               ) : (
-                <span className="text-green-600">OK</span>
+                <span className="text-green-600">High</span>
               )}
             </div>
           </div>
