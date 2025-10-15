@@ -9,7 +9,10 @@ import cartRouter from "./routes/cartRoute.js"
 import orderRouter from "./routes/orderRoute.js"
 import wishlistRouter from "./routes/wishlistRoute.js"
 import analyticsRouter from "./routes/analyticsRoute.js";
+import notificationRouter from './routes/notificationRoute.js'; 
 
+// 💡 NEW: Import the Webhook handler (assuming you created this file/logic)
+import { handleStripeWebhook } from './controllers/stripeWebhookController.js'; 
 
 
 const app = express()
@@ -19,7 +22,11 @@ const port = process.env.PORT || 4000
 connectDB()
 connectCloudinary()
 
+
+app.use('/api/order/stripe-webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+
 // Middleware
+// 💡 Apply standard JSON middleware *AFTER* the raw body middleware above.
 app.use(express.json())
 app.use(cors())
 
@@ -30,6 +37,7 @@ app.use("/api/cart", cartRouter)
 app.use("/api/order", orderRouter)
 app.use("/api/wishlist", wishlistRouter)
 app.use("/api/analytics", analyticsRouter) 
+app.use('/api/notification', notificationRouter);
 
 
 app.get("/", (req, res) => {
