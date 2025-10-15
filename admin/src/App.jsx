@@ -14,6 +14,7 @@ import SalesAnalytics from './pages/SalesAnalytics'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 // 1. Import the new CreateAdmin component
 import CreateAdmin from './components/AddAdmin' // Assuming you placed it in components/CreateAdmin.jsx
 
