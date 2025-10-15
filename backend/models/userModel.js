@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
+    userName: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     address: { type: String, default: "" },
@@ -11,7 +12,7 @@ const userSchema = new mongoose.Schema(
     cartData: { type: Object, default: {} },
     wishlistData: { type: Object, default: {} },
     role: { type: String, default: "user" }, 
-
+    
   },
   { minimize: false, timestamps: true },
 )
