@@ -4,43 +4,50 @@ import {
     registerUser, 
     adminLogin, 
     getUserProfile,
-    updateUserProfile,
-    addUser,           // This is the controller function needed for admin creation
+    updateUserProfile, // Existing import
+    uploadProfilePhoto, // 🌟 NEW IMPORT: For photo upload logic
+    addUser,
     getAllUsers,
     updateUser,
     toggleSuspendUser,
-    deleteUser
+    deleteUser,
+    handleVerificationEmail,
 } from '../controllers/userController.js';
 import User from '../models/userModel.js';
 import authMiddleware from '../middleware/auth.js';
+// 🌟 NEW IMPORT: Import the multer middleware for file handling
+import upload from '../middleware/multer.js'; // Assuming you have a multer configuration in '../middleware/multer.js'
+
 
 const userRouter = express.Router();
 
-// ================== PUBLIC ROUTES ================== //
-
-// Register regular user
+// Register
 userRouter.post('/register', registerUser);
 
-// Login regular user
+// Login
 userRouter.post('/login', loginUser);
 
 // Admin Login
 userRouter.post('/admin', adminLogin);
 
-// 🌟 NEW: Route for initial Admin Account Creation (UNPROTECTED) 🌟
-// This endpoint uses the 'addUser' controller but is public so the first admin can be created.
-userRouter.post('/register-admin', addUser);
-
-// ================== PROTECTED USER ROUTES ================== //
-
-// Get logged-in user profile
+// Get logged-in user profile (protected route)
 userRouter.get('/profile', authMiddleware, getUserProfile);
 
-// Update logged-in user profile
+// ================ PROFILE ROUTES (Protected) ================
+
+// Update logged-in user profile (protected route)
 userRouter.put('/profile', authMiddleware, updateUserProfile);
 
-// ================== ADMIN ROUTES (Protected by authMiddleware and manual role check) ================== //
+// 🌟 NEW ROUTE: Upload Profile Photo (Protected)
+// We use 'upload.single("image")' as a middleware to handle the file upload 
+// before passing control to the 'uploadProfilePhoto' controller.
+userRouter.post('/profile/photo', authMiddleware, upload.single("image"), uploadProfilePhoto);
 
+// =============================================================
+
+
+// ================== ADMIN ROUTES (Protected by authMiddleware and manual role check) ================== //
+// NO CHANGES TO ADMIN ROUTES
 // Get all users (Admin only)
 userRouter.get('/all', authMiddleware, async (req, res) => {
     try {
